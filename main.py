@@ -22,7 +22,10 @@ class CategoryFilter(object):
             self.start_date, self.end_date, **filter_params
         )
 
-        self.queue = list()
+        self.queue = [CATEGORY_BACKEND_MAP[key] for key in self.category_order]
+        self.depth = len(category_order)
+        self.n = 0
+        self.nodes = list()
 
     def get_queryset(self, start_date, end_date, *args, **kwargs):
         queryset = []
@@ -36,29 +39,40 @@ class CategoryFilter(object):
         return []
 
     def perform_grouping(self):
-        self.queue = [CATEGORY_BACKEND_MAP[key] for key in self.category_order]
-
-    def process_grouping(self):
-        pass
+        if self.depth == 0:
+            raise Exception("No Groups selected")
+        if self.depth < self.n:
+            return self.nodes
+        else:
+            backend_cls = self.queue[self.n]
+            backend = backend_cls(
+                self.queryset, self.raw_queryset, self.nodes, self.queue
+            )
+            backend.generate_nodes()
+            return self.nodes
 
     def generate_data(self):
-        pass
+        data = [node.to_dict() for node in self.nodes]
+        return data
 
 
 def main(category_order, start_date, end_date, filter_params):
     filter = CategoryFilter(category_order, start_date, end_date, filter_params)
     filter.perform_grouping()
-    filter.process_grouping()
     data = filter.generate_data()
     return data
 
 
 if __name__ == "__main__":
+
     category_order = [
         CategoryEnum.GROUP,
-        CategoryEnum.USER,
-        CategoryEnum.OFFICE,
-        CategoryEnum.SUB_TASK,
+        # CategoryEnum.USER,
+        # CategoryEnum.OFFICE,
+        # CategoryEnum.TASK,
+        # CategoryEnum.SUB_TASK,
+        # CategoryEnum.FIXTURE,
+        # CategoryEnum.PROJECT,
     ]
     start_date, end_date = datetime.datetime.now(), datetime.datetime.now()
 

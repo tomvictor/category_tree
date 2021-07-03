@@ -5,5 +5,9 @@ from enums import CategoryEnum
 CATEGORY_BACKEND_MAP = {
     CategoryEnum.GROUP: GroupCategorytBackend,
     CategoryEnum.USER: UserCategorytBackend,
-    # TODO : Complete
+    CategoryEnum.OFFICE: UserCategorytBackend,
+    CategoryEnum.TASK: UserCategorytBackend,
+    CategoryEnum.SUB_TASK: UserCategorytBackend,
+    CategoryEnum.FIXTURE: UserCategorytBackend,
+    CategoryEnum.PROJECT: UserCategorytBackend,
 }
